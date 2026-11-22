@@ -1,0 +1,379 @@
+/* All styling for the Animator app. Its code only attaches class names. */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; overflow: hidden; }
+
+/* ── Layout: two columns ─────────────────────────────────────────────────── */
+
+.app {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  background: #1a1a2e;
+  color: #d4c5a0;
+  font-family: system-ui, sans-serif;
+  font-size: 14px;
+}
+
+/* Left column: the code editor. */
+.code-col {
+  width: 42%;
+  min-width: 320px;
+  max-width: 720px;
+  flex-shrink: 0;
+  display: flex;
+  border-right: 1px solid #3a3a5e;
+  background: #0f0f1e;
+}
+
+/* The code column stays in the DOM when collapsed, so CodeMirror keeps its
+   state; hiding it gives the right column the full width. */
+.app.code-hidden .code-col { display: none; }
+
+/* PrismFlow hides the editor so the artwork can use the full window. The
+   column stays mounted, and leaving the mode shows it again. */
+.app.prism-mode .code-col,
+.app.prism-mode .reveal-code { display: none; }
+
+/* A small emoji button (the code pane's collapse toggle, and the playback
+   controls once they exist). */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #2a2a4a;
+  color: #d4c5a0;
+  border: 1px solid #4a4a8a;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 5px 8px;
+}
+.icon-btn:hover { background: #3a3a5e; }
+
+/* ── Code panel (left column) ───────────────────────────────────────────── */
+
+.code-panel {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  background: #1a1a3e;
+  border-bottom: 1px solid #3a3a5e;
+}
+.code-title {
+  color: #e8d8b0;
+  font-family: 'Georgia', serif;
+  font-size: 16px;
+  letter-spacing: 1px;
+}
+
+/* Wrapper holding the editor. */
+.code-editor-wrap {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  display: flex;
+}
+/* CodeMirror mount node: grows to fill the panel. */
+.code-editor {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  overflow: hidden;
+  background: #0d0d1a;
+}
+.code-editor .cm-editor { width: 100%; height: 100%; }
+
+/* Collapsible reference of the built-ins available to draw functions. */
+.reference {
+  margin: 8px 14px 0;
+  border: 1px solid #3a3a5e;
+  border-radius: 4px;
+  background: #0d0d1a;
+  overflow: hidden;
+}
+.reference-summary {
+  padding: 6px 12px;
+  cursor: pointer;
+  color: #b8a888;
+  font-family: monospace;
+  font-size: 12px;
+  user-select: none;
+}
+.reference-summary:hover { color: #e8d8b0; }
+.reference-body {
+  padding: 4px 12px 10px;
+  border-top: 1px solid #3a3a5e;
+}
+.reference-group { margin-top: 8px; }
+.reference-group-title {
+  color: #8a8aca;
+  font-family: monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+.reference-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  padding: 1px 0;
+}
+.reference-sig {
+  color: #89ddff;
+  font-family: monospace;
+  font-size: 12px;
+  white-space: pre;
+}
+.reference-desc { color: #6a7a8a; font-size: 11px; }
+
+/* ── Animation area (right column) ──────────────────────────────────────── */
+
+.canvas-area {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0a0a14;
+  container-type: size;
+}
+
+/* A parse or evaluation error, drawn over the canvas until the code runs. */
+.output {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  margin: 0;
+  padding: 16px;
+  overflow: auto;
+  background: #0a0a14;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #cfe3ff;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+/* Leave room for the reveal button, which only overlays this pane while the
+   code column is hidden. */
+.app.code-hidden .output { padding-top: 48px; }
+
+/* Button that reveals the code column again when it is hidden. */
+.reveal-code {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 10;
+}
+
+/* Shape and speed sliders, overlaid so the canvas stays centred. left and
+   right keep the panel inside the canvas when that pane is narrow. */
+.controls {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  left: 12px;
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: auto;
+  max-width: 280px;
+  margin-left: auto;
+  min-width: 0;
+  padding: 10px 12px;
+  background: #1a1a3e;
+  border: 1px solid #3a3a5e;
+  border-radius: 6px;
+}
+.app.code-hidden .controls { left: 52px; }
+
+/* PrismFlow keeps its controls in a side column instead of over the canvas. */
+.app.prism-mode .canvas-area {
+  justify-content: flex-start;
+  align-items: center;
+}
+.app.prism-mode .controls {
+  position: relative;
+  top: auto;
+  right: auto;
+  left: auto;
+  align-self: stretch;
+  width: 248px;
+  max-width: 248px;
+  height: auto;
+  max-height: 100%;
+  margin: 0;
+  flex-shrink: 0;
+  border-radius: 0;
+  border-top: none;
+  border-bottom: none;
+  border-left: none;
+  overflow: auto;
+  z-index: 2;
+}
+.app.prism-mode .stage {
+  width: min(100cqh, calc(100cqw - 248px));
+  height: min(100cqh, calc(100cqw - 248px));
+}
+.mode-switch {
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  background: #0d0d1a;
+  border: 1px solid #3a3a5e;
+  border-radius: 6px;
+}
+.mode-btn {
+  flex: 1;
+  background: transparent;
+  color: #b8a888;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: Georgia, serif;
+  font-size: 13px;
+  letter-spacing: 0.03em;
+  padding: 6px 8px;
+}
+.mode-btn:hover { color: #e8d8b0; }
+.mode-btn.active {
+  background: #3a3a5e;
+  color: #fff8e8;
+  border-color: #e8d8b0;
+  cursor: default;
+}
+.prism-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.prism-label {
+  color: #b8a888;
+  font-family: monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.prism-now {
+  margin: -2px 0 0;
+  color: #8a8aca;
+  font-family: monospace;
+  font-size: 11px;
+}
+.prism-btn {
+  width: 100%;
+  background: #2a2a4a;
+  color: #e8d8b0;
+  border: 1px solid #4a4a8a;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: 'Georgia', serif;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  padding: 5px 8px;
+}
+.prism-btn:hover { background: #3a3a5e; }
+.prism-btn.on {
+  background: #3a3a5e;
+  color: #fff8e8;
+  border-color: #e8d8b0;
+}
+.animator-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.drawing-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.drawing-select {
+  flex: 1;
+  min-width: 0;
+  background: #0d0d1a;
+  color: #e8d8b0;
+  border: 1px solid #4a4a8a;
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 12px;
+}
+.control-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.prism-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.prism-controls .control-label {
+  width: 92px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.control-label {
+  width: 58px;
+  color: #b8a888;
+  font-family: monospace;
+  font-size: 12px;
+}
+.control-slider {
+  flex: 1;
+  min-width: 0;
+  accent-color: #e8d8b0;
+}
+.control-value {
+  width: 36px;
+  text-align: right;
+  color: #e8d8b0;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* A centred square that fits the animation area. Both canvases fill it, so the
+   explorer uses the same box as the kaleidoscope lines. */
+.stage {
+  position: relative;
+  width: min(100cqw, 100cqh);
+  height: min(100cqw, 100cqh);
+  margin: auto;
+  flex-shrink: 0;
+}
+.stage .canvas,
+.prism-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.prism-overlay {
+  z-index: 3;
+  pointer-events: none;
+  background: transparent;
+}
+.app:not(.prism-mode) .prism-overlay {
+  visibility: hidden;
+}
+
